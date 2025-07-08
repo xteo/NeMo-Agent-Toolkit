@@ -81,7 +81,7 @@ The endpoint accepts all standard OpenAI Chat Completions API parameters:
 | `messages` | array | **Required.** List of messages in conversation format | min 1 item |
 | `model` | string | Model identifier | - |
 | `frequency_penalty` | number | Decreases likelihood of repeating tokens | -2.0 to 2.0 |
-| `logit_bias` | object | Modify likelihood of specific tokens | token_id → bias |
+| `logit_bias` | object | Modify likelihood of specific tokens | token ID → bias |
 | `logprobs` | boolean | Return log probabilities | - |
 | `top_logprobs` | integer | Number of most likely tokens to return | 0 to 20 |
 | `max_tokens` | integer | Maximum tokens to generate | ≥ 1 |
@@ -383,11 +383,11 @@ Common error scenarios:
 For high-throughput applications:
 - Use connection pooling in your HTTP client
 - Configure appropriate timeout values
-- Consider implementing retry logic with exponential backoff
+- Consider implementing retry logic with exponential back-off
 
 ## Monitoring and Observability
 
-The OpenAI compatible endpoint integrates with the toolkit's existing monitoring capabilities:
+The OpenAI compatible endpoint integrates with the toolkit existing monitoring capabilities:
 
 - **Request Metrics**: Track request volume, latency, and error rates
 - **Model Performance**: Monitor token usage and generation speed
@@ -401,7 +401,7 @@ While the endpoint accepts an `api_key` parameter for OpenAI compatibility, auth
 
 - Use reverse proxy (nginx, Apache) for API key validation
 - Implement rate limiting to prevent abuse
-- Consider IP allowlisting for production deployments
+- Consider IP allow-listing for production deployments
 
 ### Data Privacy
 
