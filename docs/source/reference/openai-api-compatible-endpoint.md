@@ -431,7 +431,7 @@ logging:
 
 ## Related Documentation
 
-- [NeMo Agent Toolkit Configuration Guide](../configuration/overview.md)
+- [NeMo Agent Toolkit Configuration Guide](../workflows/workflow-configuration.md)
 - [API Server Endpoints](./api-server-endpoints.md)
 - [WebSocket Messaging Interface](./websockets.md)
 - [OpenAI Chat Completions API Reference](https://platform.openai.com/docs/api-reference/chat)

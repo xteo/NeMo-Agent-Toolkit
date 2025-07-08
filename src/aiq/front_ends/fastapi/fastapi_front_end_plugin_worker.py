@@ -585,7 +585,7 @@ class FastApiFrontEndPluginWorker(FastApiFrontEndPluginWorkerBase):
 
         def post_openai_api_compatible_endpoint(request_type: type):
             """
-            OpenAI-compatible endpoint that handles both streaming and non-streaming 
+            OpenAI-compatible endpoint that handles both streaming and non-streaming
             based on the 'stream' parameter in the request.
             """
 

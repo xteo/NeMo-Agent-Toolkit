@@ -668,7 +668,7 @@ def _aiq_chat_response_chunk_to_string(data: AIQChatResponseChunk) -> str:
         choice = data.choices[0]
         if choice.delta and choice.delta.content:
             return choice.delta.content
-        elif choice.message and choice.message.content:
+        if choice.message and choice.message.content:
             return choice.message.content
     return ""
 
