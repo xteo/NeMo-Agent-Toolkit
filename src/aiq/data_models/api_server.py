@@ -117,19 +117,27 @@ class AIQChatRequest(BaseModel):
 
     # Required fields
     messages: typing.Annotated[list[Message], conlist(Message, min_length=1)]
-    
+
     # Optional fields (OpenAI Chat Completions API compatible)
     model: str | None = Field(default=None, description="name of the model to use")
-    frequency_penalty: float | None = Field(default=0.0, ge=-2.0, le=2.0, description="Penalty for new tokens based on frequency in text")
-    logit_bias: dict[str, float] | None = Field(default=None, description="Modify likelihood of specified tokens appearing")
+    frequency_penalty: float | None = Field(default=0.0,
+                                            ge=-2.0,
+                                            le=2.0,
+                                            description="Penalty for new tokens based on frequency in text")
+    logit_bias: dict[str, float] | None = Field(default=None,
+                                                description="Modify likelihood of specified tokens appearing")
     logprobs: bool | None = Field(default=None, description="Whether to return log probabilities")
     top_logprobs: int | None = Field(default=None, ge=0, le=20, description="Number of most likely tokens to return")
     max_tokens: int | None = Field(default=None, ge=1, description="Maximum number of tokens to generate")
     n: int | None = Field(default=1, ge=1, le=128, description="Number of chat completion choices to generate")
-    presence_penalty: float | None = Field(default=0.0, ge=-2.0, le=2.0, description="Penalty for new tokens based on presence in text")
+    presence_penalty: float | None = Field(default=0.0,
+                                           ge=-2.0,
+                                           le=2.0,
+                                           description="Penalty for new tokens based on presence in text")
     response_format: dict[str, typing.Any] | None = Field(default=None, description="Response format specification")
     seed: int | None = Field(default=None, description="Random seed for deterministic sampling")
-    service_tier: typing.Literal["auto", "default"] | None = Field(default=None, description="Service tier for the request")
+    service_tier: typing.Literal["auto", "default"] | None = Field(default=None,
+                                                                   description="Service tier for the request")
     stop: str | list[str] | None = Field(default=None, description="Up to 4 sequences where API will stop generating")
     stream: bool | None = Field(default=False, description="Whether to stream partial message deltas")
     stream_options: dict[str, typing.Any] | None = Field(default=None, description="Options for streaming")
@@ -140,19 +148,17 @@ class AIQChatRequest(BaseModel):
     parallel_tool_calls: bool | None = Field(default=True, description="Whether to enable parallel function calling")
     user: str | None = Field(default=None, description="Unique identifier representing end-user")
 
-    model_config = ConfigDict(
-        extra="allow",
-        json_schema_extra={
-            "example": {
-                "model": "nvidia/nemotron",
-                "messages": [
-                    {"role": "user", "content": "who are you?"}
-                ],
-                "temperature": 0.7,
-                "stream": False
-            }
-        }
-    )
+    model_config = ConfigDict(extra="allow",
+                              json_schema_extra={
+                                  "example": {
+                                      "model": "nvidia/nemotron",
+                                      "messages": [{
+                                          "role": "user", "content": "who are you?"
+                                      }],
+                                      "temperature": 0.7,
+                                      "stream": False
+                                  }
+                              })
 
     @staticmethod
     def from_string(data: str,
@@ -249,7 +255,7 @@ class AIQChatResponse(AIQResponseBaseModelOutput):
     usage: AIQUsage | None = None
     system_fingerprint: str | None = None
     service_tier: typing.Literal["scale", "default"] | None = None
-    
+
     @field_serializer('created')
     def serialize_created(self, created: datetime.datetime) -> int:
         """Serialize datetime to Unix timestamp for OpenAI compatibility"""
@@ -299,7 +305,7 @@ class AIQChatResponseChunk(AIQResponseBaseModelOutput):
     system_fingerprint: str | None = None
     service_tier: typing.Literal["scale", "default"] | None = None
     usage: AIQUsage | None = None
-    
+
     @field_serializer('created')
     def serialize_created(self, created: datetime.datetime) -> int:
         """Serialize datetime to Unix timestamp for OpenAI compatibility"""
@@ -331,14 +337,14 @@ class AIQChatResponseChunk(AIQResponseBaseModelOutput):
 
     @staticmethod
     def create_streaming_chunk(content: str,
-                             *,
-                             id_: str | None = None,
-                             created: datetime.datetime | None = None,
-                             model: str | None = None,
-                             role: str | None = None,
-                             finish_reason: str | None = None,
-                             usage: AIQUsage | None = None,
-                             system_fingerprint: str | None = None) -> "AIQChatResponseChunk":
+                               *,
+                               id_: str | None = None,
+                               created: datetime.datetime | None = None,
+                               model: str | None = None,
+                               role: str | None = None,
+                               finish_reason: str | None = None,
+                               usage: AIQUsage | None = None,
+                               system_fingerprint: str | None = None) -> "AIQChatResponseChunk":
         """Create an OpenAI-compatible streaming chunk"""
         if id_ is None:
             id_ = str(uuid.uuid4())
@@ -346,9 +352,10 @@ class AIQChatResponseChunk(AIQResponseBaseModelOutput):
             created = datetime.datetime.now(datetime.timezone.utc)
         if model is None:
             model = ""
-            
-        delta = AIQChoiceDelta(content=content, role=role) if content is not None or role is not None else AIQChoiceDelta()
-        
+
+        delta = AIQChoiceDelta(content=content,
+                               role=role) if content is not None or role is not None else AIQChoiceDelta()
+
         return AIQChatResponseChunk(
             id=id_,
             choices=[AIQChoice(index=0, message=None, delta=delta, finish_reason=finish_reason)],
@@ -689,9 +696,5 @@ def _ai_message_chunk_to_aiq_chat_response_chunk(data) -> AIQChatResponseChunk:
         content = str(data.text)
     elif hasattr(data, 'message') and data.message is not None:
         content = str(data.message)
-    
-    return AIQChatResponseChunk.create_streaming_chunk(
-        content=content,
-        role="assistant",
-        finish_reason=None
-    )
+
+    return AIQChatResponseChunk.create_streaming_chunk(content=content, role="assistant", finish_reason=None)
