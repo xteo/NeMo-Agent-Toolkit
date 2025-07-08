@@ -115,33 +115,44 @@ class AIQChatRequest(BaseModel):
     Fully compatible with OpenAI Chat Completions API specification.
     """
 
-    # Allow extra fields in the model_config to support derived models
-    model_config = ConfigDict(extra="allow")
-
     # Required fields
     messages: typing.Annotated[list[Message], conlist(Message, min_length=1)]
     
     # Optional fields (OpenAI Chat Completions API compatible)
-    model: str | None = None
-    frequency_penalty: float | None = Field(default=None, ge=-2.0, le=2.0)
-    logit_bias: dict[str, float] | None = None
-    logprobs: bool | None = None
-    top_logprobs: int | None = Field(default=None, ge=0, le=20)
-    max_tokens: int | None = Field(default=None, ge=1)
-    n: int | None = Field(default=None, ge=1, le=128)
-    presence_penalty: float | None = Field(default=None, ge=-2.0, le=2.0)
-    response_format: dict[str, typing.Any] | None = None
-    seed: int | None = None
-    service_tier: typing.Literal["auto", "default"] | None = None
-    stop: str | list[str] | None = None
-    stream: bool | None = Field(default=False)
-    stream_options: dict[str, typing.Any] | None = None
-    temperature: float | None = Field(default=None, ge=0.0, le=2.0)
-    top_p: float | None = Field(default=None, ge=0.0, le=1.0)
-    tools: list[dict[str, typing.Any]] | None = None
-    tool_choice: str | dict[str, typing.Any] | None = None
-    parallel_tool_calls: bool | None = Field(default=True)
-    user: str | None = None
+    model: str | None = Field(default=None, description="name of the model to use")
+    frequency_penalty: float | None = Field(default=0.0, ge=-2.0, le=2.0, description="Penalty for new tokens based on frequency in text")
+    logit_bias: dict[str, float] | None = Field(default=None, description="Modify likelihood of specified tokens appearing")
+    logprobs: bool | None = Field(default=None, description="Whether to return log probabilities")
+    top_logprobs: int | None = Field(default=None, ge=0, le=20, description="Number of most likely tokens to return")
+    max_tokens: int | None = Field(default=None, ge=1, description="Maximum number of tokens to generate")
+    n: int | None = Field(default=1, ge=1, le=128, description="Number of chat completion choices to generate")
+    presence_penalty: float | None = Field(default=0.0, ge=-2.0, le=2.0, description="Penalty for new tokens based on presence in text")
+    response_format: dict[str, typing.Any] | None = Field(default=None, description="Response format specification")
+    seed: int | None = Field(default=None, description="Random seed for deterministic sampling")
+    service_tier: typing.Literal["auto", "default"] | None = Field(default=None, description="Service tier for the request")
+    stop: str | list[str] | None = Field(default=None, description="Up to 4 sequences where API will stop generating")
+    stream: bool | None = Field(default=False, description="Whether to stream partial message deltas")
+    stream_options: dict[str, typing.Any] | None = Field(default=None, description="Options for streaming")
+    temperature: float | None = Field(default=1.0, ge=0.0, le=2.0, description="Sampling temperature between 0 and 2")
+    top_p: float | None = Field(default=None, ge=0.0, le=1.0, description="Nucleus sampling parameter")
+    tools: list[dict[str, typing.Any]] | None = Field(default=None, description="List of tools the model may call")
+    tool_choice: str | dict[str, typing.Any] | None = Field(default=None, description="Controls which tool is called")
+    parallel_tool_calls: bool | None = Field(default=True, description="Whether to enable parallel function calling")
+    user: str | None = Field(default=None, description="Unique identifier representing end-user")
+
+    model_config = ConfigDict(
+        extra="allow",
+        json_schema_extra={
+            "example": {
+                "model": "nvidia/nemotron",
+                "messages": [
+                    {"role": "user", "content": "who are you?"}
+                ],
+                "temperature": 0.7,
+                "stream": False
+            }
+        }
+    )
 
     @staticmethod
     def from_string(data: str,
